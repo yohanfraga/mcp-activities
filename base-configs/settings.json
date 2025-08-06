@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcp-activities": {
+      "command": "node",
+      "args": ["C:\\mcp\\mcp-activities\\src\\index.js"]
+    }
+  }
+}

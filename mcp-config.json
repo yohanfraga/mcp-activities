@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mcp-activities": {
+      "command": "node",
+      "args": ["C:\\Users\\X-Bits Software\\Desktop\\Projetos\\mcp-activities\\src\\index.js"],
+      "env": {}
+    }
+  }
+}
