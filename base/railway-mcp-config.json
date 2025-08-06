@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcp-activities": {
+      "url": "https://mcp-activities.up.railway.app/sse",
+      "transport": "sse"
+    }
+  }
+}
