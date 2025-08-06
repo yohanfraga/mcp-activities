@@ -23,6 +23,18 @@ const server = new Server(
   }
 );
 
+// Add logging utility
+function log(level, message, data = null) {
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+  
+  if (data) {
+    console.error(logMessage, data);
+  } else {
+    console.error(logMessage);
+  }
+}
+
 const url = 'https://app.meupontoonline.com'
 
 /**
@@ -55,6 +67,8 @@ function transformToDTO(startDate, endDate, project, description) {
  */
 async function createActivity(dto, email, password) {
   try {
+    log('info', 'Creating activity', { dto, email: email.substring(0, 3) + '***' });
+    
     const formData = new FormData();
     
     // Add DTO fields to form data
@@ -64,6 +78,7 @@ async function createActivity(dto, email, password) {
     
     var cookie = await Login(email, password)
 
+    log('info', 'Sending activity creation request to API');
     const response = await axios.post(
       `${url}/Lancamentos/Create`,
       formData,
@@ -75,12 +90,14 @@ async function createActivity(dto, email, password) {
       }
     );
     
+    log('info', 'Activity created successfully', { status: response.status });
     return {
       success: true,
       data: response.data,
       status: response.status
     };
   } catch (error) {
+    log('error', 'Failed to create activity', { error: error.message, status: error.response?.status });
     return {
       success: false,
       error: error.message,
@@ -91,6 +108,8 @@ async function createActivity(dto, email, password) {
 
 async function Login(email, password) {
   try {
+    log('info', 'Attempting to login', { email: email.substring(0, 3) + '***' });
+    
     const params = new URLSearchParams();
     params.append('email', email);
     params.append('senha', password);
@@ -105,6 +124,8 @@ async function Login(email, password) {
       }
     );
 
+    log('info', 'Login successful, extracting cookies', { status: response.status });
+    
     var statusPlan = response.headers['set-cookie'][0].split(';')[0];
     var permissoesTela = response.headers['set-cookie'][1].split(';')[0];
     var empresaUsuarioList = response.headers['set-cookie'][2].split(';')[0];
@@ -112,11 +133,11 @@ async function Login(email, password) {
 
     var cookie = statusPlan + ';' + permissoesTela + ';' + empresaUsuarioList + ';' + usuario;
 
-    console.log('cookie:', cookie)
+    log('debug', 'Cookies extracted successfully');
 
     return cookie;
   } catch (error) {
-    console.error('Error logging in:', error);
+    log('error', 'Login failed', { error: error.message, status: error.response?.status });
     throw new McpError(
       ErrorCode.InternalError,
       'Failed to log in'
@@ -134,6 +155,7 @@ function validateDate(dateString) {
 
 // List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  log('info', 'Tools list requested');
   return {
     tools: [
       {
@@ -177,13 +199,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  
+  log('info', `Tool call received: ${name}`, args);
 
   if (name === 'create_activity') {
     try {
+      log('info', 'Processing create_activity request');
       const { startDate, endDate, description, project, email, password } = args;
 
       // Validate required fields
       if (!startDate || !endDate || !description || !project || !email || !password) {
+        log('warn', 'Missing required parameters for create_activity');
         throw new McpError(
           ErrorCode.InvalidParams,
           'Missing required parameters: startDate, endDate, project, description, email and password are required'
@@ -192,6 +218,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       // Validate dates
       if (!validateDate(startDate)) {
+        log('warn', 'Invalid startDate format', { startDate });
         throw new McpError(
           ErrorCode.InvalidParams,
           'Invalid startDate format. Use ISO format: YYYY-MM-DDTHH:mm:ss or YYYY-MM-DD HH:mm'
@@ -199,6 +226,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       if (!validateDate(endDate)) {
+        log('warn', 'Invalid endDate format', { endDate });
         throw new McpError(
           ErrorCode.InvalidParams,
           'Invalid endDate format. Use ISO format: YYYY-MM-DDTHH:mm:ss or YYYY-MM-DD HH:mm'
@@ -210,12 +238,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const end = new Date(endDate);
       
       if (end <= start) {
+        log('warn', 'End date is not after start date', { startDate, endDate });
         throw new McpError(
           ErrorCode.InvalidParams,
           'End date must be after start date'
         );
       }
 
+      log('info', 'Input validation passed, transforming to DTO');
       // Transform to DTO
       const dto = transformToDTO(startDate, endDate, project, description);
 
@@ -261,12 +291,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start the server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('MCP Activities server running on stdio');
+  try {
+    log('info', 'Starting MCP Activities server...');
+    log('info', 'Server configuration', { 
+      name: 'mcp-activities', 
+      version: '1.0.0',
+      apiUrl: url,
+      nodeVersion: process.version,
+      platform: process.platform
+    });
+    
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    
+    log('info', 'MCP Activities server successfully started on stdio transport');
+    log('info', 'Server is ready to accept tool calls');
+    
+  } catch (error) {
+    log('error', 'Failed to start server', { error: error.message });
+    throw error;
+  }
 }
 
 main().catch((error) => {
-  console.error('Server failed to start:', error);
+  log('error', 'Server startup failed', { error: error.message, stack: error.stack });
   process.exit(1);
 });
