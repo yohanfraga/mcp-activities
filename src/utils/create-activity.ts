@@ -34,7 +34,7 @@ export default async function createActivity(dto: any, email: string, password: 
         data: response.data,
         status: response.status
       };
-    } catch (error) {
+    } catch (error: any) {
       log('error', 'Failed to create activity', { error: error.message, status: error.response?.status });
       return {
         success: false,

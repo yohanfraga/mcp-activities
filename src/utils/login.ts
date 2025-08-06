@@ -33,7 +33,7 @@ export default async function Login(email: string, password: string) {
       log('debug', 'Cookies extracted successfully');
   
       return cookie;
-    } catch (error) {
+    } catch (error: any) {
       log('error', 'Login failed', { error: error.message, status: error.response?.status });
       throw new McpError(
         ErrorCode.InternalError,
