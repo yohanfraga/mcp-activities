@@ -1,4 +1,4 @@
-export default function transformToDTO(startDate: string, endDate: string, project: string, description: string) {
+export default function transformToDTO(startDate: string, endDate: string, description: string, project: string) {
     const start = new Date(startDate);
     const end = new Date(endDate);
     
