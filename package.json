@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.ts",
+    "start": "tsx src/index.ts",
     "dev": "tsx src/index.ts",
     "dev:watch": "tsx watch src/index.ts",
-    "inspector": "npx @modelcontextprotocol/inspector dist/index.ts",
+    "inspector": "npx @modelcontextprotocol/inspector src/index.ts",
     "start:http": "npx mcp-proxy --port 3000 node dist/index.ts",
     "dev:http": "npx mcp-proxy --port 3000 --debug tsx src/index.ts"
   },
