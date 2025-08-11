@@ -24,6 +24,7 @@ export interface TaskRequest {
 export interface TaskMcpRequest {
     taskLog: TaskRequest[];
     project: string | 'Projeto';
+    globalDescription: string | 'Desenvolvimento';
 }
 
 export interface MissingActivitiesMcpRequest {

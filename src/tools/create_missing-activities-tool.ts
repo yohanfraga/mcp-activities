@@ -36,7 +36,8 @@ export const createMissingActivitiesTool = {
                 description: z.string(),
                 date: z.string()
             })),
-            project: z.string()
+            project: z.string(),
+            globalDescription: z.string()
         })
     },
     handler: async (request: MissingActivitiesMcpRequest): Promise<CallToolResult> => {
@@ -76,7 +77,7 @@ export const createMissingActivitiesTool = {
     const startDate = new Date(`${year}-${month}-${day}T${horario.entrada}`);
     const endDate = new Date(`${year}-${month}-${day}T${horario.saida}`);
 
-    const description = request.taskLog.find(task => task.date.includes(`${year}-${month}-${day}`))?.description ?? 'Desenvolvimento';
+    const description = request.taskLog.find(task => task.date.includes(`${year}-${month}-${day}`))?.description ?? request.globalDescription;
 
     const dto = transformToDTO({
         startDate: startDate.toISOString(),
