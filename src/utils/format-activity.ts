@@ -1,6 +1,8 @@
-export default function transformToDTO(startDate: string, endDate: string, description: string, project: string) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+import { ActivityMcpRequest, ActivityRequest } from "../types/activities";
+
+export default function transformToDTO(request: ActivityMcpRequest): ActivityRequest {
+    const start = new Date(request.startDate);
+    const end = new Date(request.endDate);
     
     const dataLancamento = start.toISOString().slice(0, 16).replace('T', ' ');
     
@@ -13,6 +15,6 @@ export default function transformToDTO(startDate: string, endDate: string, descr
       horarioFim,
       observacao: "",
       idTarefa: 233,
-      detalheTarefa: `${project} - ${description}`
-    };
+      detalheTarefa: `${request.project} - ${request.description}`
+    } as ActivityRequest;
   }

@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import { createActivityTool } from "./tools/create-activity-tool.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { createMissingActivitiesTool } from './tools/create_missing-activities-tool.js';
 
 export const url = 'https://app.meupontoonline.com'
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,13 @@ function getServer() {
     'A tool that creates activities in meupontoonline',
     createActivityTool.schema,
     createActivityTool.handler
+  );
+
+  server.tool(
+    createMissingActivitiesTool.name,
+    'A tool that creates missing activities in meupontoonline',
+    createMissingActivitiesTool.schema,
+    createMissingActivitiesTool.handler
   );
 
   return server;

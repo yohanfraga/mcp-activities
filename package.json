@@ -11,7 +11,9 @@
     "dev:watch": "tsx watch src/index.ts",
     "inspector": "npx @modelcontextprotocol/inspector src/index.ts",
     "start:http": "npx mcp-proxy --port 3000 node dist/index.ts",
-    "dev:http": "npx mcp-proxy --port 3000 --debug tsx src/index.ts"
+    "dev:http": "npx mcp-proxy --port 3000 --debug tsx src/index.ts",
+    "test:clock-ins": "tsx tests/test-clock-ins.ts",
+    "test:activities": "tsx tests/test-activities.ts"
   },
   "keywords": [
     "mcp",
@@ -21,11 +23,13 @@
   "author": "Yohan Fraga Santos",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.4",
+    "@types/jsdom": "^21.1.7",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "formdata-node": "^6.0.3",
+    "jsdom": "^26.1.0",
     "mcp-proxy": "^5.5.0",
     "tsx": "^4.0.0"
   },

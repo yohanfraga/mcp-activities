@@ -2,15 +2,16 @@ import { ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
 import { url } from "..";
 import log from "./logger";
+import { LoginRequest } from "../types/login";
 
 
-export default async function Login(email: string, password: string) {
+export default async function Login(loginRequest: LoginRequest): Promise<string> {
     try {
-      log('info', 'Attempting to login', { email: email.substring(0, 3) + '***' });
+      log('info', 'Attempting to login', { email: loginRequest.email.substring(0, 3) + '***' });
       
       const params = new URLSearchParams();
-      params.append('email', email);
-      params.append('senha', password);
+      params.append('email', loginRequest.email);
+      params.append('senha', loginRequest.password);
       
       const response = await axios.post( `${url}/Login/RealizaLogin`,
         params,

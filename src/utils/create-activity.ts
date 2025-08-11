@@ -2,19 +2,17 @@ import axios from "axios";
 import { url } from "..";
 import Login from "./login";
 import log from "./logger";
+import { ActivityRequest } from "../types/activities";
 
-export default async function createActivity(dto: any, email: string, password: string) {
+export default async function createActivity(dto: ActivityRequest, cookie: string) {
     try {
-      log('info', 'Creating activity', { dto, email: email.substring(0, 3) + '***' });
+      log('info', 'Creating activity', { dto, cookie: cookie.substring(0, 3) + '***' });
       
       const formData = new FormData();
       
-      // Add DTO fields to form data
-      Object.keys(dto).forEach(key => {
-        formData.append(key, dto[key]);
+      Object.keys(dto).forEach((key: string) => {
+        formData.append(key, dto[key as keyof ActivityRequest].toString());
       });
-      
-      var cookie = await Login(email, password)
   
       log('info', 'Sending activity creation request to API');
       const response = await axios.post(
